@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<head>
+</head>
+<body>
+    <script>
+        var canvas = document.createElement("canvas");
+        canvas.width = "120";
+        canvas.height = "120";
+        canvas.style.top = "10px";
+        canvas.style.left = "10px";
+        canvas.style.border = "1px solid #000000";
+        document.body.appendChild(canvas);
+        
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ff0000";
+        ctx.fillRect(10, 10, 50, 50);
+        ctx.fillStyle = "#00ff00";
+        ctx.fillRect(60, 10, 50, 50);
+        
+        var a = ctx.getImageData(0, 10, 100, 2);
+    </script>
+</body>
