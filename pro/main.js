@@ -28,29 +28,27 @@ window.CheckImage = {
         
         myApp.targetctx = myApp.targetCanvas.getContext("2d");
         
-        myApp.btnLoad = document.createElement("img");
-        myApp.btnLoad.onclick = function(ev) {
-            myApp.UploadImage();
-        };
-        myApp.btnLoad.style.position = "absolute";
-        myApp.btnLoad.style.width = "100px";
-        myApp.btnLoad.style.height = "50px";
-        myApp.btnLoad.style.backgroundColor = "red";
-        myApp.btnLoad.style.top = (myApp.orgCanvas.height + 20) + "px";
-        myApp.btnLoad.style.left = "10px";
-        document.body.appendChild(myApp.btnLoad);
-        
         myApp.btnComp = document.createElement("img");
+        myApp.btnComp.src = "./res/btn_compare.jpg";
         myApp.btnComp.onclick = function(ev) {
             myApp.Comparing();
         };
         myApp.btnComp.style.position = "absolute";
         myApp.btnComp.style.width = "100px";
         myApp.btnComp.style.height = "50px";
-        myApp.btnComp.style.backgroundColor = "red";
         myApp.btnComp.style.top = (myApp.orgCanvas.height + 20) + "px";
-        myApp.btnComp.style.left = "210px";
+        myApp.btnComp.style.left = "10px";
         document.body.appendChild(myApp.btnComp);
+        
+        myApp.similarityText = document.createElement("div");
+        myApp.similarityText.style.top = "532px";
+        myApp.similarityText.style.left = "120px";
+        myApp.similarityText.style.position = "absolute";
+        myApp.similarityText.style.width = "100px";
+        myApp.similarityText.style.height = "50px";
+        myApp.similarityText.style.border = "1px solid #000000";
+        myApp.similarityText.innerHTML = "&nbsp&nbsp Similarity";
+        document.body.appendChild(myApp.similarityText);
         
         function onDrop(ev) {
             ev.preventDefault();
@@ -81,8 +79,21 @@ window.CheckImage = {
         myApp.orgCanvas.ondragover = onDragOver;
         myApp.targetCanvas.ondrop = onDrop;
         myApp.targetCanvas.ondragover = onDragOver;
+        
+        var img = document.createElement("img");
+        img.src = "./res/info.jpg";
+        
+        var imgt = document.createElement("img");
+        imgt.src = "./res/info.jpg";
+        
+        img.onload = function() {
+            myApp.orgctx.drawImage(img, 0, 0);
+        }
+        
+        imgt.onload = function() {
+            myApp.targetctx.drawImage(imgt, 0, 0);
+        }
     };
-
 
     myApp.Comparing = function() 
     {
@@ -104,24 +115,26 @@ window.CheckImage = {
                     }
             }
         }
-        var lp, x, y;
+        var lp, x, y, pow;
         for (i = 0; i <= 9; i++) {
+            pow = Math.pow(2,i);
             for (lp = 0; lp < myApp.orgData.data.length; lp++) {
                 k = lp % 4;
                 x = Math.floor(lp / 4) % 512;
                 y = Math.floor((lp / 4) / 512);
-                j = Math.floor(x / (512 / Math.pow(2,i))) + Math.floor(y / (512 / Math.pow(2,i))) * Math.pow(2,i);
-                orgDataStructure[i][j][k] += myApp.orgData.data[lp] / (262144 / Math.pow(4, i));
+                j = Math.floor(x / (512 / pow)) + Math.floor(y / (512 / pow)) * pow;
+                orgDataStructure[i][j][k] += myApp.orgData.data[lp] / (262144 / (pow*pow));
             }
         }
         
         for (i = 0; i <= 9; i++) {
+            pow = Math.pow(2,i);
             for (lp = 0; lp < myApp.targetData.data.length; lp++) {
                 k = lp % 4;
                 x = Math.floor(lp / 4) % 512;
                 y = Math.floor((lp / 4) / 512);
-                j = Math.floor(x / (512 / Math.pow(2,i))) + Math.floor(y / (512 / Math.pow(2,i))) * Math.pow(2,i);
-                targetDataStructure[i][j][k] += myApp.targetData.data[lp] / (262144 / Math.pow(4, i));
+                j = Math.floor(x / (512 / pow)) + Math.floor(y / (512 / pow)) * pow;
+                targetDataStructure[i][j][k] += myApp.targetData.data[lp] / (262144 / (pow*pow));
             }
         }
         
@@ -143,7 +156,7 @@ window.CheckImage = {
                 similarity += (((myApp.DISTANCE_MAX - d) / myApp.DISTANCE_MAX) / maxJ) * 10; 
             }
         }
-        
+        myApp.similarityText.innerHTML = "&nbsp&nbsp Similarity<br>&nbsp&nbsp&nbsp&nbsp&nbsp" + similarity.toFixed(0) + "%";
 console.log(similarity);
     };
     
@@ -167,22 +180,5 @@ console.log(similarity);
     //     })();
         
     // };
-    
-    myApp.UploadImage = function() 
-    {
-        var img = document.createElement("img");
-        img.src = "./res/pika9.jpg";
-        
-        var imgt = document.createElement("img");
-        imgt.src = "./res/pika1.jpg";
-        
-        img.onload = function() {
-            myApp.orgctx.drawImage(img, 0, 0);
-        }
-        
-        imgt.onload = function() {
-            myApp.targetctx.drawImage(imgt, 0, 0);
-        }
-    }
 
 })(window.CheckImage);
